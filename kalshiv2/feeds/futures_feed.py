@@ -116,7 +116,11 @@ class FuturesFeed:
 
     def _yahoo_snapshot(self, symbol: str) -> FuturesSnapshot | None:
         try:
-            import yfinance as yf
+            try:
+                import yfinance as yf
+            except ImportError:
+                logger.error("yfinance not installed. Run: pip install yfinance")
+                return None
             ticker = yf.Ticker(symbol)
             info = ticker.fast_info
             hist = ticker.history(period="1d", interval="1m")
@@ -144,7 +148,11 @@ class FuturesFeed:
 
     def _yahoo_bars(self, symbol: str, interval: str, lookback_minutes: int) -> list[FuturesBar]:
         try:
-            import yfinance as yf
+            try:
+                import yfinance as yf
+            except ImportError:
+                logger.error("yfinance not installed. Run: pip install yfinance")
+                return []
             ticker = yf.Ticker(symbol)
             # Yahoo requires period for intraday
             period = "1d" if lookback_minutes <= 390 else "5d"

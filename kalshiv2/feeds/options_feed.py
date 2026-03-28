@@ -72,7 +72,11 @@ class OptionsFeed:
     def get_vix(self) -> tuple[float, float]:
         """Returns (vix_level, vix_change_pct)."""
         try:
-            import yfinance as yf
+            try:
+                import yfinance as yf
+            except ImportError:
+                logger.error("yfinance not installed. Run: pip install yfinance")
+                return (0.0, 0.0)
             import time
             now = time.time()
             if self._vix_cache and now - self._last_vix_time < 30:
@@ -105,7 +109,11 @@ class OptionsFeed:
 
     def _yahoo_snapshot(self, underlying: str) -> OptionsSnapshot | None:
         try:
-            import yfinance as yf
+            try:
+                import yfinance as yf
+            except ImportError:
+                logger.error("yfinance not installed. Run: pip install yfinance")
+                return None
             ticker = yf.Ticker(underlying)
             expirations = ticker.options
             if not expirations:
@@ -180,7 +188,11 @@ class OptionsFeed:
 
     def _yahoo_chain(self, underlying: str, expiry: str | None) -> list[OptionChainEntry]:
         try:
-            import yfinance as yf
+            try:
+                import yfinance as yf
+            except ImportError:
+                logger.error("yfinance not installed. Run: pip install yfinance")
+                return []
             ticker = yf.Ticker(underlying)
             expirations = ticker.options
             if not expirations:
@@ -297,7 +309,10 @@ class OptionsFeed:
     def _calc_iv_rank(symbol: str, current_iv: float) -> float:
         """IV Rank: where current IV sits in 52-week range. 0=lowest, 100=highest."""
         try:
-            import yfinance as yf
+            try:
+                import yfinance as yf
+            except ImportError:
+                return 50.0
             ticker = yf.Ticker(symbol)
             hist = ticker.history(period="1y")
             if len(hist) < 20:
